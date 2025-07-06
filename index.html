@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stack-Based Binary Tree Traversal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f5ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .box {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+    }
+    h2 {
+      color: #6d28d9;
+    }
+    input {
+      width: 80%;
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #8b5cf6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #7c3aed;
+    }
+    .output {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #111;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Binary Tree via Stack</h2>
+    <p>Enter values one-by-one (top of stack first):</p>
+    <input type="number" id="nodeValue" placeholder="Enter node value" />
+    <button onclick="addToStack()">Add to Stack</button>
+    <p id="status" style="color: #6d28d9;"></p>
+
+    <button onclick="buildTree()">Build Tree</button>
+    <br/><br/>
+    <button onclick="traverse('inorder')">Inorder</button>
+    <button onclick="traverse('preorder')">Preorder</button>
+    <button onclick="traverse('postorder')">Postorder</button>
+
+    <div class="output" id="result"></div>
+  </div>
+
+  <script>
+    const stack = [];
+    let nodes = [];
+
+    function TreeNode(val) {
+      return { data: val, left: null, right: null };
+    }
+
+    function addToStack() {
+      const input = document.getElementById('nodeValue');
+      const val = input.value.trim();
+      if (val === '') return;
+
+      stack.push(Number(val));
+      input.value = '';
+      document.getElementById('status').textContent = `Stack: ${stack.join(', ')}`;
+    }
+
+    function buildTree() {
+      if (stack.length === 0) return;
+      const reversed = [...stack].reverse(); // simulate popping stack
+
+      nodes = reversed.map(val => TreeNode(val));
+
+      for (let i = 0; 2 * i + 1 < nodes.length; i++) {
+        if (2 * i + 1 < nodes.length) nodes[i].left = nodes[2 * i + 1];
+        if (2 * i + 2 < nodes.length) nodes[i].right = nodes[2 * i + 2];
+      }
+
+      document.getElementById('status').textContent += '\nTree built!';
+    }
+
+    function traverse(type) {
+      if (!nodes.length) {
+        document.getElementById('result').textContent = 'Build the tree first.';
+        return;
+      }
+
+      let result = [];
+
+      function inorder(node) {
+        if (!node) return;
+        inorder(node.left);
+        result.push(node.data);
+        inorder(node.right);
+      }
+
+      function preorder(node) {
+        if (!node) return;
+        result.push(node.data);
+        preorder(node.left);
+        preorder(node.right);
+      }
+
+      function postorder(node) {
+        if (!node) return;
+        postorder(node.left);
+        postorder(node.right);
+        result.push(node.data);
+      }
+
+      const root = nodes[0];
+      if (type === 'inorder') inorder(root);
+      else if (type === 'preorder') preorder(root);
+      else if (type === 'postorder') postorder(root);
+
+      document.getElementById('result').textContent = `${type} traversal: ${result.join(', ')}`;
+    }
+  </script>
+</body>
+</html>
